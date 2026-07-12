@@ -71,7 +71,7 @@ class CameraActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks 
             choosePic()
         }
 
-        // 直接��发一次选择（保持原行为）
+        // 直接触发一次选择（保持原行为）
         choosePic()
     }
 
