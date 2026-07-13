@@ -136,7 +136,9 @@ class MainActivity : AppCompatActivity() {
 
     private fun capturePhoto() {
         val openCameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-        if (openCameraIntent.resolveActivity(packageManager) != null) {
+        // 添加空安全检查
+        val resolveInfo = openCameraIntent.resolveActivity(packageManager)
+        if (resolveInfo != null) {
             val path = filesDir.toString() + File.separator + "images" + File.separator
             val file = File(path, "vcamera-${System.currentTimeMillis()}.jpg")
             if (!file.parentFile.exists()) file.parentFile.mkdirs()
@@ -204,13 +206,18 @@ class MainActivity : AppCompatActivity() {
     private fun startAppDetails(intent: Intent) {
         val pm = packageManager
         val info = pm.resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY)
-        val intent2 = Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:${info.activityInfo.packageName}"))
-        startActivity(intent2)
+        // 添加空安全检查
+        if (info != null) {
+            val intent2 = Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS, 
+                Uri.parse("package:${info.activityInfo.packageName}"))
+            startActivity(intent2)
+        }
     }
 
     private fun hasPreferredApplication(context: Context, intent: Intent): Boolean {
         val pm = context.packageManager
         val info = pm.resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY)
-        return "android" != info.activityInfo.packageName
+        // 添加空安全检查
+        return info != null && "android" != info.activityInfo.packageName
     }
 }
