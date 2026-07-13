@@ -9,6 +9,10 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
+import android.widget.Button
+import android.widget.ImageView
+import android.widget.TextView
+import android.widget.VideoView
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.ActivityResultLauncher
@@ -17,22 +21,34 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import com.bumptech.glide.Glide
-import kotlinx.android.synthetic.main.activity_main.*
 import java.io.File
 
 class MainActivity : AppCompatActivity() {
 
     private var mUri: Uri? = null
-
     private var menuPay: android.view.MenuItem? = null
 
     private lateinit var cameraLauncher: ActivityResultLauncher<Intent>
     private lateinit var videoLauncher: ActivityResultLauncher<Intent>
     private lateinit var permissionLauncher: ActivityResultLauncher<String>
 
+    // 视图引用（替代 kotlin-android-extensions）
+    private lateinit var ivDemo: ImageView
+    private lateinit var vvDemo: VideoView
+    private lateinit var toTakePic: Button
+    private lateinit var toTakeVideo: Button
+    private lateinit var tvNotice: TextView
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        // 初始化视图引用
+        ivDemo = findViewById(R.id.iv_demo)
+        vvDemo = findViewById(R.id.vv_demo)
+        toTakePic = findViewById(R.id.to_take_pic)
+        toTakeVideo = findViewById(R.id.to_take_video)
+        tvNotice = findViewById(R.id.tv_notice)
 
         // 注册 permission launcher（用于 CAMERA 权限）
         permissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
@@ -45,11 +61,11 @@ class MainActivity : AppCompatActivity() {
         cameraLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult(),
             ActivityResultCallback<ActivityResult> { result ->
                 if (result.resultCode == Activity.RESULT_OK) {
-                    iv_demo.visibility = android.view.View.VISIBLE
-                    vv_demo.visibility = android.view.View.GONE
+                    ivDemo.visibility = android.view.View.VISIBLE
+                    vvDemo.visibility = android.view.View.GONE
                     val returnedUri = result.data?.data ?: mUri
                     if (returnedUri != null) {
-                        Glide.with(this).load(returnedUri).into(iv_demo)
+                        Glide.with(this).load(returnedUri).into(ivDemo)
                     }
                 }
             })
@@ -58,20 +74,20 @@ class MainActivity : AppCompatActivity() {
         videoLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult(),
             ActivityResultCallback<ActivityResult> { result ->
                 if (result.resultCode == Activity.RESULT_OK) {
-                    vv_demo.visibility = android.view.View.VISIBLE
-                    iv_demo.visibility = android.view.View.GONE
+                    vvDemo.visibility = android.view.View.VISIBLE
+                    ivDemo.visibility = android.view.View.GONE
                     val returnedUri = result.data?.data ?: mUri
                     if (returnedUri != null) {
-                        vv_demo.setVideoURI(returnedUri)
-                        vv_demo.setOnPreparedListener {
+                        vvDemo.setVideoURI(returnedUri)
+                        vvDemo.setOnPreparedListener {
                             it.isLooping = true
-                            vv_demo.start()
+                            vvDemo.start()
                         }
                     }
                 }
             })
 
-        to_take_pic.setOnClickListener {
+        toTakePic.setOnClickListener {
             val openCameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
             if (hasPreferredApplication(this@MainActivity, openCameraIntent)) {
                 startAppDetails(openCameraIntent)
@@ -87,7 +103,7 @@ class MainActivity : AppCompatActivity() {
             capturePhoto()
         }
 
-        to_take_video.setOnClickListener {
+        toTakeVideo.setOnClickListener {
             val openCameraIntent = Intent(MediaStore.ACTION_VIDEO_CAPTURE)
             if (hasPreferredApplication(this@MainActivity, openCameraIntent)) {
                 startAppDetails(openCameraIntent)
@@ -165,23 +181,23 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun checkDefaultApp() {
-        tv_notice.text = ""
-        tv_notice.visibility = android.view.View.GONE
+        tvNotice.text = ""
+        tvNotice.visibility = android.view.View.GONE
         val openCameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         if (hasPreferredApplication(this, openCameraIntent)) {
-            to_take_pic.setText(R.string.to_reset_default_app)
-            tv_notice.setText(R.string.default_app_notice)
-            tv_notice.visibility = android.view.View.VISIBLE
+            toTakePic.setText(R.string.to_reset_default_app)
+            tvNotice.setText(R.string.default_app_notice)
+            tvNotice.visibility = android.view.View.VISIBLE
         } else {
-            to_take_pic.setText(R.string.image_capture_test)
+            toTakePic.setText(R.string.image_capture_test)
         }
         val openCameraIntent2 = Intent(MediaStore.ACTION_VIDEO_CAPTURE)
         if (hasPreferredApplication(this, openCameraIntent2)) {
-            to_take_video.setText(R.string.to_reset_default_app)
-            tv_notice.setText(R.string.default_app_notice)
-            tv_notice.visibility = android.view.View.VISIBLE
+            toTakeVideo.setText(R.string.to_reset_default_app)
+            tvNotice.setText(R.string.default_app_notice)
+            tvNotice.visibility = android.view.View.VISIBLE
         } else {
-            to_take_video.setText(R.string.video_capture_test)
+            toTakeVideo.setText(R.string.video_capture_test)
         }
     }
 
