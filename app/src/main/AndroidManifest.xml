@@ -27,14 +27,14 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
-        <activity android:name=".MainActivity">
+        <activity android:name=".MainActivity" android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-        <activity android:name=".CameraActivity">
+        <activity android:name=".CameraActivity" android:exported="true">
             <!-- 确保有相机/录像 Intent 过滤器 -->
             <intent-filter>
                 <action android:name="android.media.action.IMAGE_CAPTURE" />
@@ -46,7 +46,7 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".PayActivity"></activity>
+        <activity android:name=".PayActivity" android:exported="false"></activity>
     </application>
 
 </manifest>
